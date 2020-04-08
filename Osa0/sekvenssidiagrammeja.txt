@@ -1,0 +1,31 @@
+Sekvenssidiagrammeja tehtäviin, syötä teksti osoitteen
+https://www.websequencediagrams.com/
+kirjoituskenttään.
+
+
+0.4
+selain->palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
+palvelin-->selain: HTM-koodi
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+palvelin-->selain: CSS-koodi
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
+palvelin-->selain: JS-koodi
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+palvelin-->selain: JSON-data
+
+0.5
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/spa
+palvelin-->selain: HTML-koodi
+
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+palvelin-->selain: CSS-koodi
+
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
+palvelin-->selain: JS-koodi
+
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+palvelin-->selain: JSON-data
+
+0.6
+selain->palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
