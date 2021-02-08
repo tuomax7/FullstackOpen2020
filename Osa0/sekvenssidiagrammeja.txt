@@ -7,6 +7,7 @@ kirjoituskenttään.
 selain->palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
 palvelin-->selain: status 302, uudellenohjaus
 
+
 selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
 palvelin-->selain: HTM-koodi
 
