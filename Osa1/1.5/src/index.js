@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 const App = () => {
-  const course = {
+    const course = {
     name: 'Half Stack application development',
     parts: [
       {
