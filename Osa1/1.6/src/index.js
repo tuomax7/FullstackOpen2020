@@ -13,7 +13,7 @@ const App = () => {
 			<Button handleClick={() => setGood(good+1)} name="good" />
 			<Button handleClick={() => setNeutral(neutral+1)} name="neutral" />
 			<Button handleClick={() => setBad(bad+1)} name="bad" />
-			<StatsView good={good} neutral={neutral} bad={bad} />
+			<Statistics good={good} neutral={neutral} bad={bad} />
 		</div>
 	)
 }
@@ -24,7 +24,7 @@ const Button = (props) => {
 	)
 }
 
-const StatsView = (props) => {
+const Statistics = (props) => {
 	const total = props.good+props.neutral+props.bad;
 	const avg = (props.good-props.bad)/total;
 	const goodPercent = 100*(props.good/total);
