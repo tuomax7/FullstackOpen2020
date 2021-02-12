@@ -25,12 +25,18 @@ const Button = (props) => {
 }
 
 const StatsView = (props) => {
+	const total = props.good+props.neutral+props.bad;
+	const avg = (props.good-props.bad)/total;
+	const goodPercent = 100*(props.good/total);
 	return(
 		<div>
 			<h1>Statistics</h1>
 			<p>Good {props.good}</p>
 			<p>Neutral {props.neutral}</p>
 			<p>Bad {props.bad}</p>
+			<p>Total {total}</p>
+			<p>Average {avg}</p>
+			<p>Positive {goodPercent} %</p>
 		</div>
 	)
 }
