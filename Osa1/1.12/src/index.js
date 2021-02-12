@@ -11,12 +11,24 @@ const App = (props) => {
   	setVotes(voteCopies);
   }
 
+  let mostVotedIndex = 0;
+
+  for(let i=0; i<votes.length; i++){
+  	if(votes[i] > votes[mostVotedIndex]){
+  		mostVotedIndex = i;
+  	}
+  }
+  console.log(mostVotedIndex);
+
 
   return (
     <div>
       <p>{props.anecdotes[selected]}</p>
       <button onClick={() => setSelected(Math.floor(Math.random()*anecdotes.length))}>Next anecdote</button>
       <button onClick={() => handleVote(selected)}>Vote</button>
+      <h1>Anecdote with most votes</h1>
+      <p>{props.anecdotes[mostVotedIndex]}</p>
+
     </div>
   )
 }
