@@ -19,7 +19,8 @@ const App = (props) => {
   	}
   }
   console.log(mostVotedIndex);
-
+ 
+ 
 
   return (
     <div>
