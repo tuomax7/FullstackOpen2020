@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 const App = () => {
   const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas', id: 'Arto Hellas'},
+    {name: "Arto Hellas"},
   ]) 
 
   const [ newName, setNewName ] = useState('')
@@ -19,7 +19,14 @@ const App = () => {
         name: newName
       }
 
-      setPersons(persons.concat(newPerson));
+      if(persons.find(person => person.name === newPerson.name)){
+
+        window.alert(`${newPerson.name} is already added to phonebook`)
+
+      }else{
+        setPersons(persons.concat(newPerson));
+      }
+
   }
 
   return (
