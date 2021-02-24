@@ -34,17 +34,37 @@ const Course = ({course}) => {
 
 	return(
 		<div>
-			<h1>{course.name}</h1>
-
-			<ul>
-				{course.parts.map(part =>
-					<li key={part.id}>{part.name} {part.exercises}</li>
-				)}
-			</ul>
-
+			<Header course={course} />
+			<Content course={course} />
 		</div>
 	)
 }
+
+const Header = ({course}) => {
+	return(
+		<div>
+			<h1>{course.name}</h1>
+		</div>
+	)
+}
+
+const Content = ({course}) => {
+	return(
+		<div>
+			<ul>
+				{course.parts.map(part => <Part key={part.id} part={part} />)}
+			</ul>
+		</div>
+	)
+}
+
+const Part = ({part}) => {
+	return(
+		<li>{part.name} {part.exercises} </li>
+	)
+}
+
+
 
 ReactDOM.render(<App />, document.getElementById('root'))
 
