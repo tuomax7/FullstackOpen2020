@@ -18,7 +18,6 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
-
   const changedName = (event) => {
       setNewName(event.target.value);
   }
@@ -50,22 +49,39 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      Filter shown with <input value={newFilter} onChange={changedFilter}/> 
-
-      <form onSubmit={submitPerson}>
-          <div>Name: <input value={newName} onChange={changedName}/></div>
-          <div>Number: <input value={newNumber} onChange={changedNum}/></div>
-          <div><button type="submit">Add</button></div>
-      </form>
-
-
-      <h2>Numbers</h2>
-
-      {personsToShow.map(person => <p key={person.name}>{person.name} {person.number}</p>)}
-      
+      <Filter newFilter={newFilter} setNewFilter={setNewFilter} changedFilter={changedFilter} />
+      <AddPerson submitPerson={submitPerson} newName={newName} changedName={changedName} newNumber={newNumber} changedNum={changedNum} />
+      <DisplayList personsToShow={personsToShow} />
     </div>
   )
 
+}
+
+const Filter = ({newFilter, setNewFilter, changedFilter}) => {
+   return (
+    <div>
+     Filter shown with <input value={newFilter} onChange={changedFilter}/>
+    </div>
+  )
+}
+
+const AddPerson = ({submitPerson, newName, changedName, newNumber, changedNum}) => {
+  return(
+    <form onSubmit={submitPerson}>
+        <div>Name: <input value={newName} onChange={changedName}/></div>
+        <div>Number: <input value={newNumber} onChange={changedNum}/></div>
+        <div><button type="submit">Add</button></div>
+    </form>
+  )
+}
+
+const DisplayList = ({personsToShow}) => {
+  return(
+    <div>
+      <h2>Numbers</h2>
+      {personsToShow.map(person => <p key={person.name}>{person.name} {person.number}</p>)}
+    </div>
+  )
 }
 
 export default App
