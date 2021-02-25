@@ -17,13 +17,13 @@ const App = () => {
 	}, [])
 
 
-
 	const changedFilter = (event) => {
 		setNewFilter(event.target.value);
 	}
 
-
-
+	const handleClick = (event) => {
+		setNewFilter(event.target.id);
+	}
 
 	const countriesToShow = countries.filter(country => country.name.toLowerCase().includes(newFilter.toLowerCase()));
 
@@ -31,8 +31,7 @@ const App = () => {
 		<div>
 			<h1>Country database</h1>
 			<Filter newFilter={newFilter} changedFilter={changedFilter} />
-			<Display countriesToShow={countriesToShow} />
-
+			<Display countriesToShow={countriesToShow} handleClick={handleClick} />
 		</div>
 
 	)
@@ -42,12 +41,12 @@ const Filter = ({newFilter, changedFilter}) => {
 
 	return (
 		<div>
-			Search countries by name <input value={newFilter} onChange={changedFilter} />
+			Search countries by name <input id="filter" value={newFilter} onChange={changedFilter} />
 		</div>
 	)
 }
 
-const Display = ({countriesToShow}) => {
+const Display = ({countriesToShow, handleClick}) => {
 
 	if(countriesToShow.length > 10){
 		return(
@@ -61,12 +60,20 @@ const Display = ({countriesToShow}) => {
 		return(
 			<div>
 				<h3>Countries that match your search:</h3>
-				{countriesToShow.map(country => <p key={country.name}>{country.name}</p>)}
+				{countriesToShow.map(country => <Country key={country.name} country={country} handleClick={handleClick} />)}
 
 			</div>
 		)
 	}
 
+}
+
+const Country = ({country, handleClick}) => {
+	return(
+		<div>
+			{country.name} <button id={country.name} onClick={handleClick}>Show</button>
+		</div>
+	)
 }
 
 const CountryInfo = ({country}) => {
