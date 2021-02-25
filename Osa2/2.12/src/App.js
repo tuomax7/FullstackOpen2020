@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
+import CountryInfo from './components/CountryInfo'
 
 const App = () => {
 
@@ -15,7 +16,6 @@ const App = () => {
 				setCountries(response.data)
 			})
 	}, [])
-
 
 	const changedFilter = (event) => {
 		setNewFilter(event.target.value);
@@ -74,26 +74,6 @@ const Country = ({country, handleClick}) => {
 			{country.name} <button id={country.name} onClick={handleClick}>Show</button>
 		</div>
 	)
-}
-
-const CountryInfo = ({country}) => {
-
-	return(
-		<div>
-			<h2>{country.name}</h2>
-
-			<p>Capital: {country.capital}</p>
-			<p>Population: {country.population}</p>
-
-			<h3>Languages</h3>
-			<ul>
-				{country.languages.map(language => <li key={language.name}>{language.name}</li>)}
-			</ul>
-
-			<img src={country.flag} alt={country.name} width="180" height="110"/>
-		</div>
-	)
-
 }
 
 export default App;
