@@ -52,6 +52,17 @@ const App = () => {
 
   }
 
+  const deletePerson = (person) => {
+  	if(window.confirm(`Delete ${person.name} from phonebook?`)){
+
+  		personService
+  		.deleteObject(person.id)
+  		.then(initialPersons => {
+  			setPersons(persons.filter(candidate => candidate.id !== person.id));
+  		})
+  	}
+  }
+
 
   const personsToShow = persons.filter(person => person.name.toLowerCase().includes(newFilter));
 
@@ -61,7 +72,7 @@ const App = () => {
 
       <Filter newFilter={newFilter} setNewFilter={setNewFilter} changedFilter={changedFilter} />
       <AddPerson submitPerson={submitPerson} newName={newName} changedName={changedName} newNumber={newNumber} changedNum={changedNum} />
-      <DisplayList personsToShow={personsToShow} />
+      <DisplayList personsToShow={personsToShow} deletePerson={deletePerson} />
     </div>
   )
 
@@ -85,13 +96,21 @@ const AddPerson = ({submitPerson, newName, changedName, newNumber, changedNum}) 
   )
 }
 
-const DisplayList = ({personsToShow}) => {
+const DisplayList = ({personsToShow, deletePerson}) => {
   return(
     <div>
       <h2>Numbers</h2>
-      {personsToShow.map(person => <p key={person.name}>{person.name} {person.number}</p>)}
+      {personsToShow.map(person => <Person key={person.id} person={person} deletePerson={deletePerson}/> ) }
     </div>
   )
+}
+
+const Person = ({person, deletePerson}) => {
+	return(
+		<div>
+			{person.name} {person.number} <button onClick={() => deletePerson(person)}>Delete</button>
+		</div>
+	)
 }
 
 export default App
