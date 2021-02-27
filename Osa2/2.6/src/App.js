@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
 import './index.css'
+import DisplayList from './components/displayList'
+import Notification from './components/notification'
+import AddPerson from './components/addPerson.js'
+import Filter from './components/filter'
 
 const App = () => {
   const [ persons, setPersons] = useState([])
@@ -52,9 +56,14 @@ const App = () => {
         		.then(returnedPerson => {
         			setPersons(persons.map(candidate => candidate.id !== person.id ? candidate : returnedPerson));
         			handleMessage(`Changed the number of '${returnedPerson.name}'.`, true)
-        			setNewName('');
-      			setNewNumber('');
         	})
+        	.catch(error => {
+        		setPersons(persons.filter(candidate => candidate.id !== person.id));
+        		handleMessage(`'${person.name}' was already removed from the server.`, false);
+        	})
+
+        	setNewName('');
+      		setNewNumber('');
         }
       }else{
       	personService
@@ -101,57 +110,6 @@ const App = () => {
       <DisplayList personsToShow={personsToShow} deletePerson={deletePerson} />
     </div>
   )
-
-}
-
-const Filter = ({newFilter, setNewFilter, changedFilter}) => {
-   return (
-    <div>
-     Filter shown with <input value={newFilter} onChange={changedFilter}/>
-    </div>
-  )
-}
-
-const AddPerson = ({submitPerson, newName, changedName, newNumber, changedNum}) => {
-  return(
-    <form onSubmit={submitPerson}>
-        <div>Name: <input value={newName} onChange={changedName}/></div>
-        <div>Number: <input value={newNumber} onChange={changedNum}/></div>
-        <div><button type="submit">Add</button></div>
-    </form>
-  )
-}
-
-const DisplayList = ({personsToShow, deletePerson}) => {
-  return(
-    <div>
-      <h2>Numbers</h2>
-      {personsToShow.map(person => <Person key={person.id} person={person} deletePerson={deletePerson}/> ) }
-    </div>
-  )
-}
-
-const Person = ({person, deletePerson}) => {
-	return(
-		<div>
-			{person.name} {person.number} <button onClick={() => deletePerson(person)}>Delete</button>
-		</div>
-	)
-}
-
-const Notification = ({message}) => {
-
-	if(message.messageString !== null){
-		return(
-			<div className={message.success ? 'success' : 'error'}>
-				{message.messageString}
-			</div>
-		)
-	}else{
-		return(
-			<div></div>
-		)
-	}
 
 }
 
