@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
+import './index.css'
 
 const App = () => {
   const [ persons, setPersons] = useState([])
@@ -9,6 +10,8 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
 
   const [ newFilter, setNewFilter ] = useState('')
+
+  const [message, setMessage] = useState({messageString: null, success: null});
 
   useEffect(() => {
   	personService
@@ -33,7 +36,6 @@ const App = () => {
   const submitPerson = (event) => {
       event.preventDefault();
 
-
       const newPerson = {
         name: newName,
         number: newNumber
@@ -49,18 +51,30 @@ const App = () => {
         		.update(person.id, changedPerson)
         		.then(returnedPerson => {
         			setPersons(persons.map(candidate => candidate.id !== person.id ? candidate : returnedPerson));
-        		})
+        			handleMessage(`Changed the number of '${returnedPerson.name}'.`, true)
+        			setNewName('');
+      			setNewNumber('');
+        	})
         }
       }else{
       	personService
       		.create(newPerson)
       		.then(returnedPerson => {
       			setPersons(persons.concat(returnedPerson));
+      			handleMessage(`Added '${returnedPerson.name}'.`, true)
       			setNewName('');
       			setNewNumber('');
       		})
       }
+  }
 
+  const handleMessage = (message, success) => {
+
+  	setMessage({messageString: message, success: success});
+
+  	setTimeout(() => {
+      	setMessage({messageString: null, success: null});
+     }, 3000);
   }
 
   const deletePerson = (person) => {
@@ -70,6 +84,7 @@ const App = () => {
   		.deleteObject(person.id)
   		.then(initialPersons => {
   			setPersons(persons.filter(candidate => candidate.id !== person.id));
+  			handleMessage(`Deleted '${person.name}'.`, true)
   		})
   	}
   }
@@ -80,7 +95,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={message} />
       <Filter newFilter={newFilter} setNewFilter={setNewFilter} changedFilter={changedFilter} />
       <AddPerson submitPerson={submitPerson} newName={newName} changedName={changedName} newNumber={newNumber} changedNum={changedNum} />
       <DisplayList personsToShow={personsToShow} deletePerson={deletePerson} />
@@ -122,6 +137,22 @@ const Person = ({person, deletePerson}) => {
 			{person.name} {person.number} <button onClick={() => deletePerson(person)}>Delete</button>
 		</div>
 	)
+}
+
+const Notification = ({message}) => {
+
+	if(message.messageString !== null){
+		return(
+			<div className={message.success ? 'success' : 'error'}>
+				{message.messageString}
+			</div>
+		)
+	}else{
+		return(
+			<div></div>
+		)
+	}
+
 }
 
 export default App

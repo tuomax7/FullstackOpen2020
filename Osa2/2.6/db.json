@@ -1,14 +1,9 @@
 {
   "persons": [
     {
-      "name": "Mary Poppendieck",
-      "number": "445533",
-      "id": 6
-    },
-    {
-      "name": "Testihomma",
-      "number": "12345",
-      "id": 7
+      "name": "ddd",
+      "number": "3232",
+      "id": 1
     }
   ]
 }
