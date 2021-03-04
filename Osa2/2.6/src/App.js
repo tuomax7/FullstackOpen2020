@@ -59,7 +59,7 @@ const App = () => {
         	})
         	.catch(error => {
         		setPersons(persons.filter(candidate => candidate.id !== person.id));
-        		handleMessage(`'${person.name}' was already removed from the server.`, false);
+        		handleMessage(`${person.name}' was already removed from the server.`, false);
         	})
 
         	setNewName('');
@@ -74,6 +74,9 @@ const App = () => {
       			setNewName('');
       			setNewNumber('');
       		})
+          .catch(error => {
+            handleMessage(error.response.data.error, false)
+          })
       }
   }
 
