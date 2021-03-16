@@ -21,37 +21,30 @@ const favoriteBlog = (blogs) => {
 
 }
 
-/*
+
 
 const mostBlogs = (blogs) => {
 	if(blogs.length === 0) return null
 
-	let bloggers = []
+	const result = blogs.reduce((bloggers, blogger) => {
 
-	const handleBlog = (blog) => {
-		if(bloggers.hasOwnProperty(blog.author)){
-			bloggers[blog.author]++
-		}else{
-			bloggers[blog.author] = 1
+		let knownBlogger = bloggers.find(foundBlogger => {
+			return foundBlogger.author === blogger.author
+		})
+
+
+		if(!knownBlogger){
+			return bloggers.concat({ author: blogger.author, blogs: 1 })
 		}
-	}
 
-	blogs.forEach(blog => handleBlog(blog))
+		knownBlogger.blogs++
+		return bloggers
+	}, [])
 
-
-	const reducer = (topBlogger, challenger) => {
-		if(bloggers[topBlogger] > bloggers[challenger]) return topBlogger
-		else return challenger
-	}
-
-	const topBloggerName = bloggers.reduce(reducer, bloggers[0])
-
-	return {author: topBloggerName, blogs: bloggers[topBloggerName]}
-
+	return result.reduce((topBlogger, blogger) => (topBlogger.blogs > blogger.blogs ? topBlogger : blogger))
 }
 
-*/
 
 module.exports = {
-	dummy, totalLikes, favoriteBlog
+	dummy, totalLikes, favoriteBlog, mostBlogs
 }
