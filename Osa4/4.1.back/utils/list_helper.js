@@ -11,17 +11,46 @@ const totalLikes = (blogs) => {
 const favoriteBlog = (blogs) => {
 
 	if(blogs.length === 0) return null
-	let favorite = blogs[0]
 
-	const challengeFavorite = (blog1, blog2) => {
-		if(blog1.likes > blog2.likes) favorite = blog1
-		else favorite = blog2
+	const reducer = (favorite, challenger) => {
+		if(favorite.likes > challenger.likes) return favorite
+		else return challenger
 	}
 
-	blogs.forEach(blog => challengeFavorite(favorite, blog))
+	return blogs.reduce(reducer, blogs[0])
 
-	return favorite
 }
+
+/*
+
+const mostBlogs = (blogs) => {
+	if(blogs.length === 0) return null
+
+	let bloggers = []
+
+	const handleBlog = (blog) => {
+		if(bloggers.hasOwnProperty(blog.author)){
+			bloggers[blog.author]++
+		}else{
+			bloggers[blog.author] = 1
+		}
+	}
+
+	blogs.forEach(blog => handleBlog(blog))
+
+
+	const reducer = (topBlogger, challenger) => {
+		if(bloggers[topBlogger] > bloggers[challenger]) return topBlogger
+		else return challenger
+	}
+
+	const topBloggerName = bloggers.reduce(reducer, bloggers[0])
+
+	return {author: topBloggerName, blogs: bloggers[topBloggerName]}
+
+}
+
+*/
 
 module.exports = {
 	dummy, totalLikes, favoriteBlog
