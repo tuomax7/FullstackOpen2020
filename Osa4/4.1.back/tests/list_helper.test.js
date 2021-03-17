@@ -138,5 +138,42 @@ describe('author with most blogs', () => {
 	})
 })
 
+describe('author with most likes', () => {
+
+	const equalLikedBlogs = [
+			{
+		     _id: "5a422a851b54a676234d17f7",
+		     title: "React patterns",
+		     author: "Michael Chan",
+		     url: "https://reactpatterns.com/",
+		     likes: 10,
+		     __v: 0
+		   },
+		   {
+		     _id: "5a422aa71b54a676234d17f8",
+		     title: "Go To Statement Considered Harmful",
+		     author: "Edsger W. Dijkstra",
+		     url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+		     likes: 10,
+		     __v: 0
+		   }
+		]
+
+	test('returns null when list is empty', () => {
+		const result = listHelper.mostLikes([])
+		expect(result).toEqual(null)
+	})
+
+	test('works in a basic case', () => {
+		const result = listHelper.mostLikes(blogs)
+		expect(result).toEqual({ author: "Edsger W. Dijkstra", likes: 20 })
+	})
+
+	test('returns latter blogger in a tie', () => {
+		const result = listHelper.mostLikes(equalLikedBlogs)
+		expect(result).toEqual({ author: "Edsger W. Dijkstra", likes: 10})
+	})
+})
+
 
 
