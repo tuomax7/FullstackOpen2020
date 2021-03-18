@@ -51,6 +51,12 @@ describe('Handling http-requests:', () => {
 		expect(titles).toContain('Blog B')
 	})
 
+	test('identifierfield is named as id', async () => {
+		const response = await api.get('/api/blogs')
+
+		response.body.map(blog => expect(blog.id).toBeDefined())
+	})
+
 	afterAll(() => {
 		mongoose.connection.close()
 	})
