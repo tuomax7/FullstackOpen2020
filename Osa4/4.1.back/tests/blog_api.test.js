@@ -30,7 +30,7 @@ beforeEach(async () => {
 	await Blog.insertMany(initialBlogs)
 })
 
-describe('Handling http-requests:', () => {
+describe('Returning http-gets:', () => {
 	test('blogs are returned as json', async () => {
 		await api
 		.get('/api/blogs')
@@ -57,6 +57,9 @@ describe('Handling http-requests:', () => {
 		response.body.map(blog => expect(blog.id).toBeDefined())
 	})
 
+})
+
+describe('Posting blogs with http-posts', () => {
 	test('a valid blog can be posted', async () => {
 
 		const newBlog = {
@@ -96,10 +99,6 @@ describe('Handling http-requests:', () => {
 		expect(response.body[initialBlogs.length].likes).toBe(0)
 	})
 
-	afterAll(() => {
-		mongoose.connection.close()
-	})
-
 	test('when posting a new blog without a title and an url response is 400', async () => {
 
 		const blogWithoutStuff = {
@@ -113,4 +112,30 @@ describe('Handling http-requests:', () => {
 		.expect(400)
 	})
 
+})
+
+describe('Deleting blogs with http deletes', () => {
+
+	test('deletion works in basic case', async () => {
+
+		const response = await api.get('/api/blogs')
+
+		const ids = response.body.map(blog => blog.id)
+
+		await api
+		.delete(`/api/blogs/${ids[0]}`)
+		.expect(204)
+	})
+
+	test('returns 404 if id is faulty', async () => {
+
+		await api
+		.delete('/api/blogs/kukkuluuruu')
+		.expect(404)
+	})
+})
+
+
+afterAll(() => {
+	mongoose.connection.close()
 })

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
@@ -18,11 +19,22 @@ blogsRouter.post('/', async (request, response) => {
 
   	response.status(400).end()
   }else{
-  	
+
   	const savedBlog = await blog.save()
   	response.json(savedBlog.toJSON())
   }
 
+})
+
+blogsRouter.delete('/:id', async (request, response) => {
+
+	if(!request.params.id.match(/^[0-9a-f]{24}$/i)|| !Blog.findById(request.params.id)){
+		response.status(404).end()
+	}
+	else{
+		await Blog.findByIdAndRemove(request.params.id)
+		response.status(204).end()
+	}	
 })
 
 
