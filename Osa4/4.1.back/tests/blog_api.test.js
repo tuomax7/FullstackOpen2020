@@ -57,6 +57,26 @@ describe('Handling http-requests:', () => {
 		response.body.map(blog => expect(blog.id).toBeDefined())
 	})
 
+	test('a valid blog can be posted', async () => {
+
+		const newBlog = {
+			title: 'Blog D',
+			author: 'Person D',
+			url: 'Blog/D',
+			likes: 4
+		}
+
+		await api
+		.post('/api/blogs')
+		.send(newBlog)
+		.expect(200)
+		.expect('Content-type', /application\/json/)
+
+		const response = await api.get('/api/blogs')
+
+		expect(response.body).toHaveLength(initialBlogs.length + 1)
+	})
+
 	afterAll(() => {
 		mongoose.connection.close()
 	})
