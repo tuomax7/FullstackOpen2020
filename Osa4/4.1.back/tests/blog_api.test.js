@@ -120,10 +120,10 @@ describe('Deleting blogs with http deletes', () => {
 
 		const response = await api.get('/api/blogs')
 
-		const ids = response.body.map(blog => blog.id)
+		const toBeDeleted = response.body[0]
 
 		await api
-		.delete(`/api/blogs/${ids[0]}`)
+		.delete(`/api/blogs/${toBeDeleted.id}`)
 		.expect(204)
 	})
 
@@ -133,6 +133,51 @@ describe('Deleting blogs with http deletes', () => {
 		.delete('/api/blogs/kukkuluuruu')
 		.expect(404)
 	})
+})
+
+describe('Editing blogs with http puts', () => {
+
+	test('basic put request works for changing likes', async () => {
+
+		const response = await api.get('/api/blogs')
+
+		const toBeReplaced = response.body[0]
+
+		const replacement = { ...toBeReplaced, likes: 50 }
+
+		await api
+		.put(`/api/blogs/${toBeReplaced.id}`)
+		.send(replacement)
+		.expect(200)
+	})
+
+	test('replacement has wrong datatypes for fields', async () => {
+		const response = await api.get('/api/blogs')
+
+		const toBeReplaced = response.body[1]
+
+		const replacement = { ...toBeReplaced, likes: "Moro"}
+
+		await api
+		.put(`/api/blogs/${toBeReplaced.id}`)
+		.send(replacement)
+		.expect(400)
+	})
+
+	test('id of blog to be replaced is faulty', async () => {
+		const response = await api.get('/api/blogs')
+
+		const toBeReplaced = response.body[1]
+
+		const replacement = { ...toBeReplaced, likes: 49}
+
+		await api
+		.put('/api/blogs/kukkuluuruu')
+		.send(replacement)
+		.expect(404)
+	})
+
+
 })
 
 
