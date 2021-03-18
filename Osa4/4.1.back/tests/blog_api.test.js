@@ -77,6 +77,25 @@ describe('Handling http-requests:', () => {
 		expect(response.body).toHaveLength(initialBlogs.length + 1)
 	})
 
+	test('when posting a new blog without a value for likes, it is initiated with 0', async () => {
+		const blogWithoutLikes = {
+			title: 'NoLikesBlog',
+			author: 'NoLikesAuthor',
+			url: 'No/Likes'
+		}
+
+		await api
+		.post('/api/blogs')
+		.send(blogWithoutLikes)
+		.expect(200)
+		.expect('Content-type', /application\/json/)
+
+
+		const response = await api.get('/api/blogs')
+
+		expect(response.body[initialBlogs.length].likes).toBe(0)
+	})
+
 	afterAll(() => {
 		mongoose.connection.close()
 	})
