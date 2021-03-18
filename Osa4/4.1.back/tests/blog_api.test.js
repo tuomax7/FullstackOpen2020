@@ -100,4 +100,17 @@ describe('Handling http-requests:', () => {
 		mongoose.connection.close()
 	})
 
+	test('when posting a new blog without a title and an url response is 400', async () => {
+
+		const blogWithoutStuff = {
+			author: 'Author Person',
+			likes: 100
+		}
+
+		await api
+		.post('/api/blogs')
+		.send(blogWithoutStuff)
+		.expect(400)
+	})
+
 })
