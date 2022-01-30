@@ -1,33 +1,19 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const helper = require('./test_helper')
+
 const app = require('../app')
 const api = supertest(app)
 
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
-const initialBlogs = [
-	{
-		title: 'Blog A',
-		author: 'Person A',
-		url: 'Blog/A',
-		likes: 1
-	},
-	{
-		title: 'Blog B',
-		author: 'Person B',
-		url: 'Blog/B',
-		likes: 2
-	},
-	{
-		title: 'Blog C',
-		author: 'Person C',
-		url: 'Blog/C',
-		likes: 3
-	}
-]
+const User = require('../models/user')
+
+
 
 beforeEach(async () => {
 	await Blog.deleteMany({})
-	await Blog.insertMany(initialBlogs)
+	await Blog.insertMany(helper.initialBlogs)
 })
 
 describe('Returning http-gets:', () => {
@@ -40,7 +26,7 @@ describe('Returning http-gets:', () => {
 
 	test('all blogs are returned', async () => {
 		const response = await api.get('/api/blogs')
-		expect(response.body).toHaveLength(initialBlogs.length)
+		expect(response.body).toHaveLength(helper.initialBlogs.length)
 	})
 
 	test('a blog written by a certain person is returned', async () => {
@@ -75,9 +61,9 @@ describe('Posting blogs with http-posts', () => {
 		.expect(200)
 		.expect('Content-type', /application\/json/)
 
-		const response = await api.get('/api/blogs')
+		const blogsAtEnd = await helper.blogsInDb()
 
-		expect(response.body).toHaveLength(initialBlogs.length + 1)
+		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
 	})
 
 	test('when posting a new blog without a value for likes, it is initiated with 0', async () => {
@@ -94,9 +80,9 @@ describe('Posting blogs with http-posts', () => {
 		.expect('Content-type', /application\/json/)
 
 
-		const response = await api.get('/api/blogs')
+		const blogsAtEnd = await helper.blogsInDb()
 
-		expect(response.body[initialBlogs.length].likes).toBe(0)
+		expect(blogsAtEnd[helper.initialBlogs.length].likes).toBe(0)
 	})
 
 	test('when posting a new blog without a title and an url response is 400', async () => {
@@ -177,7 +163,64 @@ describe('Editing blogs with http puts', () => {
 		.expect(404)
 	})
 
+})
 
+
+describe('When there is initially one user at db', () => {
+
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('testPass', 10)
+    const user = new User({ username: 'testUser', passwordHash })
+
+    await user.save()
+  })
+
+  test('Creation succeeds with a fresh username', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'freesi',
+      name: 'Freesi Käyttäjä',
+      password: 'hyshys',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+  })
+
+  test('Creation fails with proper statuscode and message if username already taken', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+
+    const newUser = {
+      username: 'testUser',
+      name: 'Superuser',
+      password: 'salainen',
+    }
+
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('`username` to be unique')
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
 })
 
 
