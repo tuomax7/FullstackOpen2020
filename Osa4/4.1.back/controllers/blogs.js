@@ -39,7 +39,13 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
 
-	if(!request.params.id.match(/^[0-9a-f]{24}$/i)|| !Blog.findById(request.params.id)){
+	const blog = await Blog.findById(request.params.id)
+
+	const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+  	const user = await User.findById(decodedToken.id)
+
+	if(!request.params.id.match(/^[0-9a-f]{24}$/i)|| !Blog.findById(request.params.id) || (blog.user.toString() !== user._id.toString())){
 		response.status(404).end()
 	}
 	else{
