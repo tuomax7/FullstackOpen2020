@@ -12,10 +12,11 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
+
+  if(!request.token) response.status(401).json({ error: 'Unauthorized to access the blog' })
+
   const user = request.user
-
   const blog = new Blog({...request.body, user: user._id})
-
 
   if(!blog.likes){
   	blog.likes = 0
@@ -38,15 +39,18 @@ blogsRouter.delete('/:id', async (request, response) => {
 
 	const blog = await Blog.findById(request.params.id)
 
-  	const user = request.user
-
-	if(!request.params.id.match(/^[0-9a-f]{24}$/i)|| !Blog.findById(request.params.id) || (blog.user.toString() !== user._id.toString())){
+	if(!request.params.id.match(/^[0-9a-f]{24}$/i)|| !Blog.findById(request.params.id)){
 		response.status(404).end()
 	}
-	else{
+
+	if(blog.user.toString() === request.user._id){
 		await Blog.findByIdAndRemove(request.params.id)
-		response.status(204).end()
-	}	
+    	response.status(204).end()
+  	}
+  	return response.status(401).json({
+    	error: 'Unauthorized to access the blog',
+  	})
+	
 })
 
 blogsRouter.put('/:id', async (request, response) => {
@@ -71,6 +75,5 @@ blogsRouter.put('/:id', async (request, response) => {
 		response.json(editedBlog.toJSON())
 	}
 })
-
 
 module.exports = blogsRouter

@@ -6,9 +6,24 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const { request } = require('express')
+const User = require('../models/user')
 
 
 beforeEach(async () => {
+	await User.deleteMany({})
+	const user = {
+		username: 'Testikäyttäjä',
+		name: "Testaaja",
+		password: 'hyshyshys'
+	}
+	await api
+    .post('/api/users')
+    .send(user)
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /application\/json/)
+	
+
 	await Blog.deleteMany({})
 	await Blog.insertMany(helper.initialBlogs)
 })
@@ -43,7 +58,19 @@ describe('Returning http-gets:', () => {
 })
 
 describe('Posting blogs with http-posts', () => {
+
 	test('a valid blog can be posted', async () => {
+
+		const userToLogIn = {
+			username: 'Testikäyttäjä',
+			password: 'hyshyshys'
+		}
+		
+		const loggedInUser = 
+		await api
+		.post('/api/login')
+		.send(userToLogIn)
+		.expect('Content-Type', /application\/json/)
 
 		const newBlog = {
 			title: 'Blog D',
@@ -52,9 +79,11 @@ describe('Posting blogs with http-posts', () => {
 			likes: 4
 		}
 
+		
 		await api
 		.post('/api/blogs')
 		.send(newBlog)
+		.set('Authorization', `bearer ${loggedInUser.body.token}`)
 		.expect(200)
 		.expect('Content-type', /application\/json/)
 
@@ -64,6 +93,18 @@ describe('Posting blogs with http-posts', () => {
 	})
 
 	test('when posting a new blog without a value for likes, it is initiated with 0', async () => {
+
+		const userToLogIn = {
+			username: 'Testikäyttäjä',
+			password: 'hyshyshys'
+		}
+		
+		const loggedInUser = 
+		await api
+		.post('/api/login')
+		.send(userToLogIn)
+		.expect('Content-Type', /application\/json/)
+
 		const blogWithoutLikes = {
 			title: 'NoLikesBlog',
 			author: 'NoLikesAuthor',
@@ -73,6 +114,7 @@ describe('Posting blogs with http-posts', () => {
 		await api
 		.post('/api/blogs')
 		.send(blogWithoutLikes)
+		.set('Authorization', `bearer ${loggedInUser.body.token}`)
 		.expect(200)
 		.expect('Content-type', /application\/json/)
 
@@ -84,6 +126,17 @@ describe('Posting blogs with http-posts', () => {
 
 	test('when posting a new blog without a title and an url response is 400', async () => {
 
+		const userToLogIn = {
+			username: 'Testikäyttäjä',
+			password: 'hyshyshys'
+		}
+		
+		const loggedInUser = 
+		await api
+		.post('/api/login')
+		.send(userToLogIn)
+		.expect('Content-Type', /application\/json/)
+
 		const blogWithoutStuff = {
 			author: 'Author Person',
 			likes: 100
@@ -92,31 +145,31 @@ describe('Posting blogs with http-posts', () => {
 		await api
 		.post('/api/blogs')
 		.send(blogWithoutStuff)
+		.set('Authorization', `bearer ${loggedInUser.body.token}`)
 		.expect(400)
 	})
 
-})
+	test('when posting a new blog without providing a token returns 401 unauthorised', async () => {
 
-describe('Deleting blogs with http deletes', () => {
-
-	test('deletion works in basic case', async () => {
-
-		const response = await api.get('/api/blogs')
-
-		const toBeDeleted = response.body[0]
-
-		await api
-		.delete(`/api/blogs/${toBeDeleted.id}`)
-		.expect(204)
-	})
-
-	test('returns 404 if id is faulty', async () => {
+		const newBlog = {
+			title: 'Blog E',
+			author: 'Person E',
+			url: 'Blog/E',
+			likes: 4
+		}
 
 		await api
-		.delete('/api/blogs/kukkuluuruu')
-		.expect(404)
+		.post('/api/blogs')
+		.send(newBlog)
+		.expect(401)
+
+		const blogsAtEnd = await helper.blogsInDb()
+
+		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 	})
+
 })
+
 
 describe('Editing blogs with http puts', () => {
 
