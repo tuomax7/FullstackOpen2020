@@ -7,67 +7,100 @@ import BlogForm from './components/BlogForm'
 
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [message, setMessage] = useState(null)
-  
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+    const [blogs, setBlogs] = useState([])
+    const [message, setMessage] = useState(null)
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [user, setUser] = useState(null)
 
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+    useEffect(() => {
+        blogService.getAll().then(blogs =>
+            setBlogs( blogs )
+        )
+    }, [])
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    useEffect(() => {
+        const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
 
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+        if (loggedUserJSON) {
+            const user = JSON.parse(loggedUserJSON)
+            setUser(user)
+            blogService.setToken(user.token)
+        }
+    }, [])
+
+    const likeBlog = async(id) => {
+        const blog = blogs.find(b => b.id === id)
+        const changedBlog = { ...blog, user: blog.user.id, likes: blog.likes + 1 }
+
+        try {
+            const updatedBlog = await blogService.update(id, changedBlog)
+            setBlogs(blogs.map(blog => blog.id !== id ? blog : updatedBlog))
+
+        } catch(exception){
+            setMessage(
+                [`Blog '${blog.title}' was already removed from server`, false]
+            )
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+            setBlogs(blogs.filter(b => b.id !== id))
+
+        }
+
     }
-  }, [])
+
+    const removeBlog = async(id) => {
+        const blog = blogs.find(b => b.id === id)
+
+        try {
+            await blogService.deleteBlog(id)
+            setBlogs(blogs.filter(blog => blog.id !== id))
+
+        } catch(exception){
+            setMessage(
+                [`Blog '${blog.title}' was already removed from server`, false]
+            )
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+            setBlogs(blogs.filter(b => b.id !== id))
+
+        }
+
+    }
 
 
 
-  const handleLogout = async(event) => {
-    window.localStorage.removeItem("loggedBlogappUser")
-    setUser(null)
-  }
+    const handleLogout = async() => {
+        window.localStorage.removeItem('loggedBlogappUser')
+        setUser(null)
+    }
 
 
-  if (user === null) {
+    if (user === null) {
+        return (
+            <div>
+                <h2>Blogs</h2>
+                <Notification message={message} />
+                <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} setMessage={setMessage} setUser={setUser}/>
+            </div>
+        )
+    }
+
     return (
-      <div>
-        <h2>Blogs</h2>
-        <Notification message={message} />
-        <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} setMessage={setMessage} setUser={setUser}/>
-      </div>
+        <div>
+            {user.username} logged in <button type="submit" onClick={handleLogout}>Log out</button>
+            <h2>Blogs</h2>
+
+            <Notification message={message} />
+            {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+                <Blog key={blog.id} blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} user={user}/>
+            )}
+            <BlogForm user={user} setMessage={setMessage} blogs={blogs} setBlogs={setBlogs} />
+        </div>
     )
-  }
-
-
-  return (
-    <div>
-      
-      {user.username} logged in <button type="submit" onClick={handleLogout}>Log out</button>
-      <h2>Blogs</h2>
-
-      <Notification message={message} />
-
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-      <BlogForm title={title} author={author} url={url} user={user} setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} setMessage={setMessage} blogs={blogs} setBlogs={setBlogs}/>
-      
-    </div>
-  )
 }
 
 export default App
