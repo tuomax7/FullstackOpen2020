@@ -1,8 +1,7 @@
 import { useRef, useState } from 'react'
-import blogService from '../services/blogs.js'
 import Togglable from '../components/Togglable.js'
 
-const AddBlog = ({ user, blogs, setBlogs, setMessage }) => {
+const AddBlog = ({ user, blogs, setBlogs, setMessage, createBlog }) => {
 
     const blogFormRef = useRef()
 
@@ -19,7 +18,7 @@ const AddBlog = ({ user, blogs, setBlogs, setMessage }) => {
                 title, author, url, user, likes: 0
             }
 
-            const createdBlog = await blogService.create(blogObject)
+            const createdBlog = await createBlog(blogObject)
             setBlogs(blogs.concat(createdBlog))
             setTitle('')
             setAuthor('')
@@ -48,6 +47,7 @@ const AddBlog = ({ user, blogs, setBlogs, setMessage }) => {
                         value={title}
                         name="title"
                         onChange={({ target }) => setTitle(target.value)}
+                        placeholder='write title here...'
                     />
                 </div>
                 <div>
@@ -57,6 +57,7 @@ const AddBlog = ({ user, blogs, setBlogs, setMessage }) => {
                         value={author}
                         name="author"
                         onChange={({ target }) => setAuthor(target.value)}
+                        placeholder='write author here...'
                     />
                 </div>
                 <div>
@@ -66,6 +67,7 @@ const AddBlog = ({ user, blogs, setBlogs, setMessage }) => {
                         value={url}
                         name="url"
                         onChange={({ target }) => setUrl(target.value)}
+                        placeholder='write url here...'
                     />
                 </div>
                 <button type="submit">Save blog</button>

@@ -28,7 +28,7 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
                 {dataVisible ? <button onClick={() => setDataVisible(!dataVisible)}>Hide</button> :
                     <button onClick={() => setDataVisible(!dataVisible)}>Show</button>}
             </div>
-            <div style={showWhenVisible}>
+            <div style={showWhenVisible} className='blogDetails'>
                 <p>{blog.url}</p>
                 <p>likes: {blog.likes} <button onClick={() => likeBlog(blog.id)}>Like</button></p>
                 <p>{blog.user.username}</p>

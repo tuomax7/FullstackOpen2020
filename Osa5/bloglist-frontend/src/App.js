@@ -51,6 +51,9 @@ const App = () => {
 
     }
 
+    const addBlog = async(blogObject) => await blogService.create(blogObject)
+
+
     const removeBlog = async(id) => {
         const blog = blogs.find(b => b.id === id)
 
@@ -98,7 +101,7 @@ const App = () => {
             {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
                 <Blog key={blog.id} blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} user={user}/>
             )}
-            <BlogForm user={user} setMessage={setMessage} blogs={blogs} setBlogs={setBlogs} />
+            <BlogForm user={user} setMessage={setMessage} createBlog={addBlog} blogs={blogs} setBlogs={setBlogs} />
         </div>
     )
 }
