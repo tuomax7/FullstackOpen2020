@@ -1,48 +1,28 @@
-import { useRef, useState } from 'react'
-import Togglable from '../components/Togglable.js'
+import { useState } from 'react'
 
-const AddBlog = ({ user, blogs, setBlogs, setMessage, createBlog }) => {
+const AddBlog = ({ createBlog }) => {
 
-    const blogFormRef = useRef()
 
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
 
-    const addBlog = async(event) => {
+    const addBlog = (event) => {
         event.preventDefault()
-
-        blogFormRef.current.toggleVisibility()
-        try {
-            const blogObject = {
-                title, author, url, user, likes: 0
-            }
-
-            const createdBlog = await createBlog(blogObject)
-            setBlogs(blogs.concat(createdBlog))
-            setTitle('')
-            setAuthor('')
-            setUrl('')
-            setMessage(['blog added succesfully', true])
-            setTimeout(() => {
-                setMessage(null)
-            }, 5000)
-
-        } catch(exception) {
-            setMessage(['blog was failed to add', false])
-            setTimeout(() => {
-                setMessage(null)
-            }, 5000)
-        }
+        createBlog({ title, author, url, likes: 0 })
+        setTitle('')
+        setAuthor('')
+        setUrl('')
     }
 
     return(
-        <Togglable buttonLabel='Add blog' ref={blogFormRef}>
+        <div>
             <h3>Create new</h3>
             <form onSubmit={addBlog}>
                 <div>
                     Title
                     <input
+                        id='title'
                         type="text"
                         value={title}
                         name="title"
@@ -53,6 +33,7 @@ const AddBlog = ({ user, blogs, setBlogs, setMessage, createBlog }) => {
                 <div>
                   Author
                     <input
+                        id='author'
                         type="text"
                         value={author}
                         name="author"
@@ -63,6 +44,7 @@ const AddBlog = ({ user, blogs, setBlogs, setMessage, createBlog }) => {
                 <div>
                   Url
                     <input
+                        id='url'
                         type="text"
                         value={url}
                         name="url"
@@ -70,9 +52,9 @@ const AddBlog = ({ user, blogs, setBlogs, setMessage, createBlog }) => {
                         placeholder='write url here...'
                     />
                 </div>
-                <button type="submit">Save blog</button>
+                <button id='blog-button' type="submit">Save blog</button>
             </form>
-        </Togglable>
+        </div>
     )
 }
 

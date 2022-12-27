@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 
@@ -12,6 +13,8 @@ const App = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [user, setUser] = useState(null)
+
+    const blogFormRef = createRef()
 
 
     useEffect(() => {
@@ -51,7 +54,27 @@ const App = () => {
 
     }
 
-    const addBlog = async(blogObject) => await blogService.create(blogObject)
+    const createBlog = async (BlogToAdd) => {
+        try {
+            blogFormRef.current.toggleVisibility()
+            const createdBlog = await blogService.create(BlogToAdd)
+            setMessage(
+                [`Blog ${BlogToAdd.title} was successfully added`, true]
+            )
+            setBlogs(blogs.concat(createdBlog))
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+        } catch(exception) {
+            setMessage(
+                [`Cannot add blog ${BlogToAdd.title}`, false]
+            )
+
+            setTimeout(() => {
+                setMessage(null)
+            }, 5000)
+        }
+    }
 
 
     const removeBlog = async(id) => {
@@ -101,7 +124,9 @@ const App = () => {
             {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
                 <Blog key={blog.id} blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} user={user}/>
             )}
-            <BlogForm user={user} setMessage={setMessage} createBlog={addBlog} blogs={blogs} setBlogs={setBlogs} />
+            <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
+                <BlogForm createBlog={createBlog} />
+            </Togglable>
         </div>
     )
 }

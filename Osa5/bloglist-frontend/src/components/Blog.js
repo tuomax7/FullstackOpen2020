@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import blogService from '../services/blogs'
 
-const Blog = ({ blog, likeBlog, removeBlog, user }) => {
+const Blog = ({ blog, likeBlog, removeBlog }) => {
     const blogStyle = {
         paddingTop: 10,
         paddingLeft: 2,
@@ -20,9 +21,14 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
         }
     }
 
+    const removeOK = async(blogUserId) => {
+        const user = await blogService.getUserInfo()
+        return blogUserId === user.id
+    }
+
 
     return (
-        <div style={blogStyle}>
+        <div className='blog' style={blogStyle}>
             <div>
                 {blog.title} by {blog.author}
                 {dataVisible ? <button onClick={() => setDataVisible(!dataVisible)}>Hide</button> :
@@ -32,7 +38,7 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
                 <p>{blog.url}</p>
                 <p>likes: {blog.likes} <button onClick={() => likeBlog(blog.id)}>Like</button></p>
                 <p>{blog.user.username}</p>
-                {blog.user.username === user.username ? <button onClick={() => tryRemoveBlog(blog.id, blog.title)}>Remove</button> : null}
+                {removeOK(blog.user.id) ? <button onClick={() => tryRemoveBlog(blog.id, blog.title)}>Remove</button> : null}
             </div>
         </div>
     )}
