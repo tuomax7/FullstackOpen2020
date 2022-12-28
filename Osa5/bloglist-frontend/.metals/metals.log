@@ -4,3 +4,4 @@
 2022.12.24 17:38:53 INFO  time: initialize in 0.79s
 2022.12.24 17:38:54 WARN  Build server is not auto-connectable.
 2022.12.24 17:38:54 WARN  no build tool detected in workspace '/Users/tuomasnummela/Desktop/FullstackOpen2020/Osa5/bloglist-frontend'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2022.12.28 01:36:46 INFO  shutting down Metals
