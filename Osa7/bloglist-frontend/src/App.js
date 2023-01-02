@@ -19,6 +19,8 @@ import { initialUsers } from "./reducers/usersReducer.js";
 
 import { Routes, Route, useNavigate, useMatch, Link } from "react-router-dom";
 
+import { Table, Navbar, Nav, ListGroup } from "react-bootstrap";
+
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -117,19 +119,31 @@ const App = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <div>
         {user ? (
           <div>
-            <div>
-              <Link to="/blogs">Blogs</Link>
-              <Link to="/users">Users</Link>
-              {user.username} logged in{" "}
-              <button type="submit" onClick={handleLogout}>
-                Log out
-              </button>
-            </div>
-
+            <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+              <Navbar.Collapse id="responsive-navbar-nav">
+                <Nav className="mr-auto">
+                  <Nav.Link href="#" as="span">
+                    <Link to="/blogs">Blogs</Link>
+                  </Nav.Link>
+                  <Nav.Link href="#" as="span">
+                    <Link to="/users">Users</Link>
+                  </Nav.Link>
+                  <Nav.Link href="#" as="span">
+                    <em>
+                      {user.username} logged in{" "}
+                      <button type="submit" onClick={handleLogout}>
+                        Log out
+                      </button>
+                    </em>
+                  </Nav.Link>
+                </Nav>
+              </Navbar.Collapse>
+            </Navbar>
             <h2>Blogs</h2>
             <Notification />
           </div>
@@ -151,17 +165,25 @@ const App = () => {
           path="/blogs"
           element={
             <div>
-              {[...blogs]
-                .sort((a, b) => b.likes - a.likes)
-                .map((blog) => (
-                  <Blog
-                    key={blog.id}
-                    blog={blog}
-                    likeBlog={likeBlog}
-                    removeBlog={removeBlog}
-                    user={user}
-                  />
-                ))}
+              <Table striped>
+                <tbody>
+                  {[...blogs]
+                    .sort((a, b) => b.likes - a.likes)
+                    .map((blog) => (
+                      <tr key={blog.id}>
+                        <td>
+                          <Blog
+                            key={blog.id}
+                            blog={blog}
+                            likeBlog={likeBlog}
+                            removeBlog={removeBlog}
+                            user={user}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
               <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
                 <BlogForm createBlog={addBlog} />
               </Togglable>
@@ -227,13 +249,15 @@ const App = () => {
                 <div>
                   <h3>{inspectedUser.username}</h3>
                   <h4>Added blogs</h4>
-                  <ul>
+                  <ListGroup>
                     {[...blogs]
                       .filter((blog) => blog.user.id === inspectedUser.id)
                       .map((blog) => (
-                        <li key={blog.id}>{blog.title}</li>
+                        <ListGroup.Item key={blog.id}>
+                          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                        </ListGroup.Item>
                       ))}
-                  </ul>
+                  </ListGroup>
                 </div>
               ) : null}
             </div>

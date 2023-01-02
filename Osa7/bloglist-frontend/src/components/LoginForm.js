@@ -7,6 +7,8 @@ import { logIn } from "../reducers/userReducer.js";
 
 import { useNavigate } from "react-router-dom";
 
+import { Form, Button } from "react-bootstrap";
+
 const LoginForm = ({ username, password, setUsername, setPassword }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -27,32 +29,31 @@ const LoginForm = ({ username, password, setUsername, setPassword }) => {
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <div>
-        Username
-        <input
+    <Form onSubmit={handleLogin}>
+      <Form.Group>
+        <Form.Label>Username</Form.Label>
+        <Form.Control
           id="username"
           type="text"
           value={username}
-          name="Username"
+          name="username"
           onChange={({ target }) => setUsername(target.value)}
         />
-      </div>
-
-      <div>
-        Password
-        <input
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>Password</Form.Label>
+        <Form.Control
           id="password"
           type="password"
           value={password}
-          name="Password"
+          name="password"
           onChange={({ target }) => setPassword(target.value)}
         />
-      </div>
-      <button id="login-button" type="submit">
+      </Form.Group>
+      <Button variant="primary" id="login-button" type="submit">
         Login
-      </button>
-    </form>
+      </Button>
+    </Form>
   );
 };
 
