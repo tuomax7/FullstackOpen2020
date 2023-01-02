@@ -121,10 +121,15 @@ const App = () => {
       <div>
         {user ? (
           <div>
-            {user.username} logged in{" "}
-            <button type="submit" onClick={handleLogout}>
-              Log out
-            </button>
+            <div>
+              <Link to="/blogs">Blogs</Link>
+              <Link to="/users">Users</Link>
+              {user.username} logged in{" "}
+              <button type="submit" onClick={handleLogout}>
+                Log out
+              </button>
+            </div>
+
             <h2>Blogs</h2>
             <Notification />
           </div>
