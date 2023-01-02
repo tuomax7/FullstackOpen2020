@@ -15,6 +15,10 @@ import {
 } from "./reducers/blogReducer.js";
 import { initializeUser, logOut } from "./reducers/userReducer.js";
 
+import { initialUsers } from "./reducers/usersReducer.js";
+
+import { Routes, Route, useNavigate, useMatch, Link } from "react-router-dom";
+
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,6 +26,7 @@ const App = () => {
   const blogFormRef = createRef();
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(initializeBlogs());
@@ -34,6 +39,22 @@ const App = () => {
   }, [dispatch]);
 
   const user = useSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch(initialUsers());
+  }, [dispatch]);
+
+  const users = useSelector((state) => state.users);
+
+  const inspectedUserMatch = useMatch("/users/:id");
+  const inspectedUser = inspectedUserMatch
+    ? [...users].find((user) => user.id === inspectedUserMatch.params.id)
+    : null;
+
+  const inspectedBlogMatch = useMatch("/blogs/:id");
+  const inspectedBlog = inspectedBlogMatch
+    ? [...blogs].find((blog) => blog.id === inspectedBlogMatch.params.id)
+    : null;
 
   const likeBlog = async (id) => {
     const blog = blogs.find((b) => b.id === id);
@@ -92,45 +113,128 @@ const App = () => {
 
   const handleLogout = async () => {
     dispatch(logOut());
+    navigate("/login");
   };
-
-  if (user === null) {
-    return (
-      <div>
-        <h2>Blogs</h2>
-        <Notification />
-        <LoginForm
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-        />
-      </div>
-    );
-  }
 
   return (
     <div>
-      {user.username} logged in{" "}
-      <button type="submit" onClick={handleLogout}>
-        Log out
-      </button>
-      <h2>Blogs</h2>
-      <Notification />
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            likeBlog={likeBlog}
-            removeBlog={removeBlog}
-            user={user}
-          />
-        ))}
-      <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
+      <div>
+        {user ? (
+          <div>
+            {user.username} logged in{" "}
+            <button type="submit" onClick={handleLogout}>
+              Log out
+            </button>
+            <h2>Blogs</h2>
+            <Notification />
+          </div>
+        ) : (
+          <div>
+            <h2>Blogs</h2>
+            <Notification />
+            <LoginForm
+              username={username}
+              password={password}
+              setUsername={setUsername}
+              setPassword={setPassword}
+            />
+          </div>
+        )}
+      </div>
+      <Routes>
+        <Route
+          path="/blogs"
+          element={
+            <div>
+              {[...blogs]
+                .sort((a, b) => b.likes - a.likes)
+                .map((blog) => (
+                  <Blog
+                    key={blog.id}
+                    blog={blog}
+                    likeBlog={likeBlog}
+                    removeBlog={removeBlog}
+                    user={user}
+                  />
+                ))}
+              <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
+                <BlogForm createBlog={addBlog} />
+              </Togglable>
+            </div>
+          }
+        />
+        <Route
+          path="/blogs/:id"
+          element={
+            <div>
+              {inspectedBlog ? (
+                <div>
+                  <h3>{inspectedBlog.title}</h3>
+                  <p>{inspectedBlog.url}</p>
+                  <p>
+                    Likes: {inspectedBlog.likes}{" "}
+                    <button onClick={() => likeBlog(inspectedBlog.id)}>
+                      Like
+                    </button>
+                  </p>
+                  <p>Added by {inspectedBlog.user.username}</p>
+                </div>
+              ) : null}
+            </div>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <div>
+              <h3>Users</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Blogs created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...users].map((user) => (
+                    <tr key={user.id}>
+                      <td>
+                        <Link to={`/users/${user.id}`}>{user.username}</Link>
+                      </td>
+                      <td>
+                        {
+                          [...blogs].filter((blog) => blog.user.id === user.id)
+                            .length
+                        }
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <div>
+              {inspectedUser ? (
+                <div>
+                  <h3>{inspectedUser.username}</h3>
+                  <h4>Added blogs</h4>
+                  <ul>
+                    {[...blogs]
+                      .filter((blog) => blog.user.id === inspectedUser.id)
+                      .map((blog) => (
+                        <li key={blog.id}>{blog.title}</li>
+                      ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          }
+        />
+      </Routes>
     </div>
   );
 };

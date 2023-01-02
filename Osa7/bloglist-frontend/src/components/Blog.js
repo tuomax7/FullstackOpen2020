@@ -1,6 +1,8 @@
 import { useState } from "react";
 import blogService from "../services/blogs";
 
+import { Link } from "react-router-dom";
+
 const Blog = ({ blog, likeBlog, removeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
@@ -29,7 +31,9 @@ const Blog = ({ blog, likeBlog, removeBlog }) => {
   return (
     <div className="blog" style={blogStyle}>
       <div>
-        {blog.title} by {blog.author}
+        <Link to={`/blogs/${blog.id}`}>
+          {blog.title} by {blog.author}
+        </Link>
         {dataVisible ? (
           <button onClick={() => setDataVisible(!dataVisible)}>Hide</button>
         ) : (

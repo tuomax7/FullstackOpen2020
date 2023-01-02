@@ -5,8 +5,11 @@ import { setNotification } from "../reducers/notificationReducer";
 
 import { logIn } from "../reducers/userReducer.js";
 
+import { useNavigate } from "react-router-dom";
+
 const LoginForm = ({ username, password, setUsername, setPassword }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -17,6 +20,7 @@ const LoginForm = ({ username, password, setUsername, setPassword }) => {
       setPassword("");
 
       dispatch(setNotification(["logged in successfully", true], 5));
+      navigate("/blogs");
     } catch (exception) {
       dispatch(setNotification(["incorrect username or password", false], 5));
     }
