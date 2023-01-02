@@ -1,6 +1,5 @@
 import { useState, useEffect, createRef } from "react";
 import Blog from "./components/Blog";
-import blogService from "./services/blogs";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import LoginForm from "./components/LoginForm";
@@ -8,12 +7,17 @@ import BlogForm from "./components/BlogForm";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
-import { initializeBlogs, createBlog } from "./reducers/blogReducer.js";
+import {
+  initializeBlogs,
+  createBlog,
+  increaseLikes,
+  deleteBlog,
+} from "./reducers/blogReducer.js";
+import { initializeUser, logOut } from "./reducers/userReducer.js";
 
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
 
   const blogFormRef = createRef();
 
@@ -26,25 +30,17 @@ const App = () => {
   const blogs = useSelector((state) => state.blogs);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
+    dispatch(initializeUser());
+  }, [dispatch]);
 
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
+  const user = useSelector((state) => state.user);
 
   const likeBlog = async (id) => {
     const blog = blogs.find((b) => b.id === id);
-    //const changedBlog = { ...blog, user: blog.user.id, likes: blog.likes + 1 };
 
     try {
-      /*
-      const updatedBlog = await blogService.update(id, changedBlog);
-      setBlogs(blogs.map((blog) => (blog.id !== id ? blog : updatedBlog)));
+      dispatch(increaseLikes(blog));
       dispatch(setNotification([`Blog '${blog.title}' was liked!`, true], 5));
-      */
     } catch (exception) {
       dispatch(
         setNotification(
@@ -52,7 +48,6 @@ const App = () => {
           5
         )
       );
-      //setBlogs(blogs.filter((b) => b.id !== id));
     }
   };
 
@@ -77,16 +72,14 @@ const App = () => {
     const blog = blogs.find((b) => b.id === id);
 
     try {
-      /*
-      await blogService.deleteBlog(blog);
-      setBlogs(blogs.filter((blog) => blog.id !== id));
+      dispatch(deleteBlog(blog));
+
       dispatch(
         setNotification(
           [`Blog '${blog.title}' was removed from server`, true],
           5
         )
       );
-      */
     } catch (exception) {
       dispatch(
         setNotification(
@@ -94,14 +87,11 @@ const App = () => {
           5
         )
       );
-
-      //setBlogs(blogs.filter((b) => b.id !== id));
     }
   };
 
   const handleLogout = async () => {
-    window.localStorage.removeItem("loggedBlogappUser");
-    setUser(null);
+    dispatch(logOut());
   };
 
   if (user === null) {
@@ -114,7 +104,6 @@ const App = () => {
           password={password}
           setUsername={setUsername}
           setPassword={setPassword}
-          setUser={setUser}
         />
       </div>
     );

@@ -1,32 +1,18 @@
 import PropTypes from "prop-types";
 
-import loginService from "../services/login.js";
-import blogService from "../services/blogs.js";
-
 import { useDispatch } from "react-redux";
 import { setNotification } from "../reducers/notificationReducer";
 
-const LoginForm = ({
-  username,
-  password,
-  setUsername,
-  setPassword,
-  setUser,
-}) => {
+import { logIn } from "../reducers/userReducer.js";
+
+const LoginForm = ({ username, password, setUsername, setPassword }) => {
   const dispatch = useDispatch();
 
   const handleLogin = async (event) => {
     event.preventDefault();
 
     try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-
-      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
+      dispatch(logIn(username, password));
       setUsername("");
       setPassword("");
 
