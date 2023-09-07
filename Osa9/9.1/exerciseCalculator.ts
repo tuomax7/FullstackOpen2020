@@ -1,3 +1,19 @@
+interface ExerciseValues {
+  targetHours: number;
+  dailyExerciseHours: Array<number>;
+}
+
+export const parseArguments = (target: number, dailyExercises: Array<number>): ExerciseValues => {
+  if (!isNaN(target) && Array.isArray(dailyExercises)) {
+    return {
+      targetHours: target,
+      dailyExerciseHours: dailyExercises
+    };
+  } else {
+    throw new Error('Malformatted params.');
+  }
+};
+
 interface Feedback {
     days: number;
     trainedDays: number;
