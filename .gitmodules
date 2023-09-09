@@ -1,3 +1,6 @@
 [submodule "Osa9/patientor"]
 	path = Osa9/patientor
 	url = https://github.com/tuomax7/patientor.git
+[submodule "Osa9/flight-diary"]
+	path = Osa9/flight-diary
+	url = https://github.com/tuomax7/flight-diary.git
