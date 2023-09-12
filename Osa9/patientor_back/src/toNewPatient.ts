@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from './types';
+import { NewPatient, Gender, Entry } from './types';
 
 
 const isString = (text: unknown): text is string => {
@@ -11,6 +11,10 @@ const isDate = (date: string): boolean => {
 
 const isGender = (param: string): param is Gender => {
   return Object.values(Gender).map(v => v.toString()).includes(param);
+};
+
+const isArray = (array: unknown): array is [] => {
+  return array instanceof Array;
 };
 
 
@@ -54,6 +58,13 @@ const parseOccupation = (occupation: unknown): string => {
   return occupation;
 };
 
+const parseEntries = (entries: unknown): Entry[] => {
+  if (!isArray(entries)) {
+    throw new Error('Incorrect entries');
+  }
+
+  return entries;
+};
 
 
 
@@ -64,7 +75,7 @@ const toNewPatient = (object: unknown): NewPatient => {
     throw new Error('Incorrect or missing data');
   }
 
-	if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object)  {
+	if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object && 'entries' in object)  {
 
 		const newEntry: NewPatient = {
 			name: parseName(object.name),
@@ -72,6 +83,7 @@ const toNewPatient = (object: unknown): NewPatient => {
 			ssn: parseSSN(object.ssn),
 			gender: parseGender(object.gender),
 			occupation: parseOccupation(object.occupation),
+			entries: parseEntries(object.entries)
 		};
 	
 		return newEntry;
@@ -79,5 +91,8 @@ const toNewPatient = (object: unknown): NewPatient => {
 
 	throw new Error('Incorrect data: some fields are missing');
 };
+
+
+
 
 export default toNewPatient;
