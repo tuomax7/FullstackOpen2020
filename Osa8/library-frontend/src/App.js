@@ -4,7 +4,10 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import RecommendedBooks from "./components/RecommendedBooks";
 import LoginForm from "./components/LoginForm";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useSubscription } from "@apollo/client";
+import { BOOK_ADDED, ALL_BOOKS, ALL_AUTHORS } from "./queries";
+
+import { updateAuthorCache, updateBookCache } from "./utils";
 
 const App = () => {
   const client = useApolloClient();
@@ -12,6 +15,31 @@ const App = () => {
 
   const [page, setPage] = useState("authors");
   const [error, setError] = useState("");
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const addedBook = data.data.bookAdded;
+      const addedAuthor = addedBook.author;
+      window.alert(
+        `New book: ${addedBook.title} by ${addedAuthor.name} added!`
+      );
+      /*
+      client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        return {
+          allPersons: allBooks.concat(addedBook),
+        };
+      });
+      client.cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
+        return {
+          allAuthors: allAuthors.concat(addedAuthor),
+        };
+      });
+			*/
+      updateBookCache(client.cache, { query: ALL_BOOKS }, addedBook);
+
+      updateAuthorCache(client.cache, { query: ALL_AUTHORS }, addedAuthor);
+    },
+  });
 
   const logout = () => {
     setToken(null);

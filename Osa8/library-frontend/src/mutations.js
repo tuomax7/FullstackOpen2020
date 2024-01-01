@@ -17,6 +17,7 @@ export const CREATE_BOOK = gql`
       author {
         name
         born
+        bookCount
       }
       genres
       published
